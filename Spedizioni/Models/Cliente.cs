@@ -15,7 +15,7 @@ namespace Spedizioni.Models
         public string PartitaIVA { get; set; }
 
         [Required(ErrorMessage = "Inserire Privato o Azienda")]
-        [checkTipoCliente(AllowType = "Privato,Azienda", ErrorMessage = ("Scegli tra: 'Privato', 'Azienda'")]
+        [checkTipoCliente(AllowType = "Privato,Azienda", ErrorMessage = ("Scegli tra: 'Privato', 'Azienda'"))]
         public string TipoCliente { get; set; }
         public string Email { get; set; }
         public string Telefono { get; set; }
