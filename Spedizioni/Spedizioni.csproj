@@ -122,8 +122,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="checkStatoSped.cs" />
     <Compile Include="checkTipoCliente.cs" />
+    <Compile Include="Controllers\AggiornamentoSpedizioneController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SpedizioneController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -186,9 +188,19 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Cliente\Create.cshtml" />
     <Content Include="Views\Cliente\Index.cshtml" />
+    <Content Include="Views\Spedizione\Index.cshtml" />
+    <Content Include="Views\Spedizione\Create.cshtml" />
+    <Content Include="Views\Spedizione\Details.cshtml" />
+    <Content Include="Views\AggiornamentoSpedizione\Index.cshtml" />
+    <Content Include="Views\AggiornamentoSpedizione\Create.cshtml" />
+    <Content Include="Views\Cliente\Edit.cshtml" />
+    <Content Include="Views\Cliente\Details.cshtml" />
+    <Content Include="Views\Spedizione\Edit.cshtml" />
+    <Content Include="Views\AggiornamentoSpedizione\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AggiornamentoSped\" />
     <Folder Include="Views\Validation\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,112 @@
+﻿@model Tuple<Spedizioni.Models.Spedizione, List<Spedizioni.Models.AggiornamentoSpedizione>>
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Spedizione</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.IDSpedizione)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.IDSpedizione)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.FK_IDCliente)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.FK_IDCliente)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.DataSpedizione)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.DataSpedizione)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.Peso)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.Peso)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.CittaDest)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.CittaDest)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.IndirizzoDest)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.IndirizzoDest)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.NominativoDest)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.NominativoDest)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.CostoSpedizione)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.CostoSpedizione)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Item1.DataConsegna)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Item1.DataConsegna)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <h4>Aggiornamenti Spedizione</h4>
+    <table class="table">
+        <tr>
+            <th>Stato</th>
+            <th>Luogo</th>
+            <th>Descrizione Evento</th>
+            <th>Ultimo Aggiornamento</th>
+        </tr>
+
+        @foreach (var aggiornamento in Model.Item2) // Accedi al secondo elemento della tupla
+        {
+            <tr>
+                <td>@aggiornamento.StatoSped</td>
+                <td>@aggiornamento.LuogoPacco</td>
+                <td>@aggiornamento.DescrizEvento</td>
+                <td>@aggiornamento.UltimoAggiornamento.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Item1.IDSpedizione }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

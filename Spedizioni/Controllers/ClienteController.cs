@@ -135,6 +135,170 @@ namespace Spedizioni.Controllers
             return View(cliente);
         }
 
+        // GET: Cliente/Edit/5
+        public ActionResult Edit(int id)
+        {
+            Cliente cliente = null;
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string sql = "SELECT * FROM Clienti WHERE IDCliente = @IDCliente";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@IDCliente", id);
+
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        cliente = new Cliente
+                        {
+                            IDCliente = (int)reader["IDCliente"],
+                            Nome = reader["Nome"].ToString(),
+                            Cognome = reader["Cognome"].ToString(),
+                            NomeAzienda = reader["NomeAzienda"].ToString(),
+                            Indirizzo = reader["Indirizzo"].ToString(),
+                            CodiceFiscale = reader["CodiceFiscale"].ToString(),
+                            PartitaIVA = reader["PartitaIVA"].ToString(),
+                            TipoCliente = reader["TipoCliente"].ToString(),
+                            Email = reader["Email"].ToString(),
+                            Telefono = reader["Telefono"].ToString()
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    // Gestire l'errore (ad esempio, loggare l'errore e reindirizzare a una pagina di errore)
+                }
+            }
+
+            if (cliente == null)
+            {
+                // Se non trova il cliente, reindirizza ad esempio alla lista dei clienti con un messaggio
+                return RedirectToAction("Index");
+            }
+
+            PopulateTipoClienteDropDownList(cliente.TipoCliente);
+            return View(cliente);
+        }
+
+        // POST: Cliente/Edit/5
+        [HttpPost]
+        public ActionResult Edit(Cliente cliente)
+        {
+            if (ModelState.IsValid)
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // Inizia a costruire la query SQL per l'aggiornamento
+                    string sql = "UPDATE Clienti SET TipoCliente = @TipoCliente, Indirizzo = @Indirizzo, Email = @Email, Telefono = @Telefono";
+
+                    // Aggiungi i parametri per i campi comuni
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.Connection = conn;
+                    cmd.Parameters.AddWithValue("@TipoCliente", cliente.TipoCliente);
+                    cmd.Parameters.AddWithValue("@Indirizzo", cliente.Indirizzo);
+                    cmd.Parameters.AddWithValue("@Email", string.IsNullOrEmpty(cliente.Email) ? DBNull.Value : (object)cliente.Email);
+                    cmd.Parameters.AddWithValue("@Telefono", string.IsNullOrEmpty(cliente.Telefono) ? DBNull.Value : (object)cliente.Telefono);
+
+                    // Aggiungi i parametri in base al tipo di cliente e estendi la query SQL
+                    if (cliente.TipoCliente == "Privato")
+                    {
+                        sql += ", Nome = @Nome, Cognome = @Cognome, CodiceFiscale = @CodiceFiscale";
+                        cmd.Parameters.AddWithValue("@Nome", cliente.Nome);
+                        cmd.Parameters.AddWithValue("@Cognome", cliente.Cognome);
+                        cmd.Parameters.AddWithValue("@CodiceFiscale", cliente.CodiceFiscale);
+                    }
+                    else if (cliente.TipoCliente == "Azienda")
+                    {
+                        sql += ", NomeAzienda = @NomeAzienda, PartitaIVA = @PartitaIVA";
+                        cmd.Parameters.AddWithValue("@NomeAzienda", cliente.NomeAzienda);
+                        cmd.Parameters.AddWithValue("@PartitaIVA", cliente.PartitaIVA);
+                    }
+
+                    // Completa la query con la clausola WHERE
+                    sql += " WHERE IDCliente = @IDCliente";
+                    cmd.Parameters.AddWithValue("@IDCliente", cliente.IDCliente);
+
+                    cmd.CommandText = sql;
+
+                    try
+                    {
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Non è stato possibile aggiornare il cliente.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", $"Si è verificato un errore: {ex.Message}");
+                    }
+                }
+            }
+
+            PopulateTipoClienteDropDownList(cliente.TipoCliente);
+            return View(cliente);
+        }
+
+        // GET: Cliente/Dettagli/5
+        public ActionResult Details(int id)
+        {
+            Cliente cliente = null;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                // Preparare la query SQL per selezionare il cliente per ID
+                string sql = "SELECT * FROM Clienti WHERE IDCliente = @IDCliente";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@IDCliente", id);
+
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    // Se trova il cliente, crea un nuovo oggetto Cliente e assegna i valori
+                    if (reader.Read())
+                    {
+                        cliente = new Cliente
+                        {
+                            IDCliente = (int)reader["IDCliente"],
+                            Nome = reader["Nome"].ToString(),
+                            Cognome = reader["Cognome"].ToString(),
+                            NomeAzienda = reader["NomeAzienda"].ToString(),
+                            Indirizzo = reader["Indirizzo"].ToString(),
+                            CodiceFiscale = reader["CodiceFiscale"].ToString(),
+                            PartitaIVA = reader["PartitaIVA"].ToString(),
+                            TipoCliente = reader["TipoCliente"].ToString(),
+                            Email = reader["Email"].ToString(),
+                            Telefono = reader["Telefono"].ToString()
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+
+                }
+            }
+
+            if (cliente == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            // Se trova il cliente, passa il modello alla vista dei dettagli
+            return View(cliente);
+        }
+
+
 
         // Metodo per popolare la dropdownlist
         private void PopulateTipoClienteDropDownList(object selectedTipo = null)

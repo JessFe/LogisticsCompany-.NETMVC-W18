@@ -1,0 +1,151 @@
+﻿@model Spedizioni.Models.Cliente
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Cliente</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.HiddenFor(model => model.IDCliente)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TipoCliente, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.TipoCliente, (IEnumerable<SelectListItem>)ViewBag.TipoCliente, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.TipoCliente, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group" id="clNome">
+        @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="clCognome">
+        @Html.LabelFor(model => model.Cognome, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Cognome, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Cognome, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="clCF">
+        @Html.LabelFor(model => model.CodiceFiscale, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.CodiceFiscale, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.CodiceFiscale, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="clNomeAz">
+        @Html.LabelFor(model => model.NomeAzienda, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NomeAzienda, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NomeAzienda, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="clPiva">
+        @Html.LabelFor(model => model.PartitaIVA, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.PartitaIVA, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.PartitaIVA, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="form-group" id="clIndirizzo">
+        @Html.LabelFor(model => model.Indirizzo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Indirizzo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Indirizzo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group" id="clEmail">
+        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="clTel">
+        @Html.LabelFor(model => model.Telefono, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Telefono, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Telefono, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Nasconde tutti i campi inizialmente
+            toggleFields();
+
+            // Mostra i campi corretti in base alla selezione
+            $("#TipoCliente").change(function () {
+                toggleFields();
+            });
+
+            function toggleFields() {
+                let tipoCliente = $("#TipoCliente").val();
+                if (tipoCliente === "Privato") {
+                    // Mostra per Privato
+                    $("#clNome").show();
+                    $("#clCognome").show();
+                    $("#clCF").show();
+                    // Nasconde per Azienda
+                    $("#clNomeAz").hide();
+                    $("#clPiva").hide();
+                } else if (tipoCliente === "Azienda") {
+                    // Mostra per Azienda
+                    $("#clNomeAz").show();
+                    $("#clPiva").show();
+                    // Nasconde per Privato
+                    $("#clNome").hide();
+                    $("#clCognome").hide();
+                    $("#clCF").hide();
+                } else {
+                    // Nasconde tutto se non selezionato
+                    $("#clNome").hide();
+                    $("#clCognome").hide();
+                    $("#clCF").hide();
+                    $("#clNomeAz").hide();
+                    $("#clPiva").hide();
+                }
+            }
+        });
+    </script>
+}
+

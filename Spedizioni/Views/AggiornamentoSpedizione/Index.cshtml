@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Spedizioni.Models.AggiornamentoSpedizione>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IDAggiornamento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FK_IDSpedizione)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StatoSped)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LuogoPacco)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DescrizEvento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UltimoAggiornamento)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IDAggiornamento)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FK_IDSpedizione)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StatoSped)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LuogoPacco)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DescrizEvento)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UltimoAggiornamento)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.IDAggiornamento }) |
+            
+        </td>
+    </tr>
+}
+
+</table>

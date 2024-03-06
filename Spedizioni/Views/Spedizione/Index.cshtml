@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Spedizioni.Models.Spedizione>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+    @Html.Raw(" | ")
+    @Html.ActionLink("Aggiornamenti Spedizioni", "Index", "AggiornamentoSpedizione")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IDSpedizione)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FK_IDCliente)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataSpedizione)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Peso)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CittaDest)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IndirizzoDest)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NominativoDest)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CostoSpedizione)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataConsegna)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IDSpedizione)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FK_IDCliente)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataSpedizione)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Peso)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CittaDest)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IndirizzoDest)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NominativoDest)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CostoSpedizione)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DataConsegna)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.IDSpedizione }) |
+            @Html.ActionLink("Details", "Details", new { id = item.IDSpedizione}) |
+            
+        </td>
+    </tr>
+}
+
+</table>

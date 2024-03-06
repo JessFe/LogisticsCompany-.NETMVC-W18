@@ -15,32 +15,12 @@
             @Html.DisplayNameFor(model => model.IDCliente)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Nome)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Cognome)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NomeAzienda)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Indirizzo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CodiceFiscale)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PartitaIVA)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.TipoCliente)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            Cliente
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Telefono)
-        </th>
+
         <th></th>
     </tr>
 
@@ -50,36 +30,16 @@
             @Html.DisplayFor(modelItem => item.IDCliente)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Nome)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Cognome)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NomeAzienda)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Indirizzo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CodiceFiscale)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PartitaIVA)
-        </td>
-        <td>
             @Html.DisplayFor(modelItem => item.TipoCliente)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Email)
+            @((item.TipoCliente == "Privato") ? (item.Cognome + " " + item.Nome) : item.NomeAzienda)
         </td>
+
         <td>
-            @Html.DisplayFor(modelItem => item.Telefono)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            @Html.ActionLink("Edit", "Edit", new { id = item.IDCliente })
+            @Html.ActionLink("Details", "Details", new { id = item.IDCliente }) |
+
         </td>
     </tr>
 }
