@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+
+<div class="font-monospace">
+    <h2>Dashboard</h2>
+
+</div>
+
+
+<!-- Pulsanti per le azioni AJAX -->
+<button id="btnSpedizioniInConsegnaOggi" class="btn btn-warning btn-custom btn-sm font-monospace fw-semibold me-2">Spedizioni in consegna oggi</button>
+<button id="btnNumeroSpedizioniInAttesa" class="btn btn-warning btn-custom btn-sm font-monospace fw-semibold me-2">Numero spedizioni in attesa</button>
+<button id="btnSpedizioniPerCittaDest" class="btn btn-warning btn-custom btn-sm font-monospace fw-semibold me-2">Spedizioni per città destinataria</button>
+
+<hr class="mt-1" />
+
+<!-- Container per i risultati -->
+<div id="risultati" class="font-monospace mt-3"></div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Funzioni per le azioni AJAX
+        $(document).ready(function () {
+            // al click sul pulsante "Spedizioni in consegna oggi" esegue una chiamata AJAX
+            $('#btnSpedizioniInConsegnaOggi').click(function() {
+                $.ajax({
+                    url: '@Url.Action("SpedizioniInConsegnaOggi", "Spedizione")',
+                    type: 'GET',
+                    dataType: 'json',
+                    // successo: visualizza le spedizioni in consegna oggi
+                    success: function(spedizioni) {
+                        var contenuto = '<h5>Spedizioni in consegna oggi</h5><ul>';
+                        spedizioni.forEach(function(spedizione) {
+                            contenuto += '<li>ID Spedizione: ' + spedizione.IDSpedizione + ', Rif.: ' + spedizione.NominativoDest + '</li>';
+                        });
+                        contenuto += '</ul>';
+                        $('#risultati').html(contenuto);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            // al click sul pulsante "Numero spedizioni in attesa" esegue una chiamata AJAX
+            $('#btnNumeroSpedizioniInAttesa').click(function() {
+                $.ajax({
+                    url: '@Url.Action("NumeroSpedizioniInAttesa", "Spedizione")',
+                    type: 'GET',
+                    dataType: 'json',
+                    // successo: visualizza il numero di spedizioni in attesa
+                    success: function(data) {
+                        $('#risultati').html('<h5>Numero di spedizioni in attesa: ' + data.NumeroSpedizioniInAttesa + '</h5>');
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            // al click sul pulsante "Spedizioni per città destinataria" esegue una chiamata AJAX
+            $('#btnSpedizioniPerCittaDest').click(function() {
+                $.ajax({
+                    url: '@Url.Action("SpedizioniPerCittaDest", "Spedizione")',
+                    type: 'GET',
+                    dataType: 'json',
+                    // successo: visualizza le spedizioni per città destinataria
+                    success: function(spedizioniPerCitta) {
+                        var contenuto = '<h5>Spedizioni per città destinataria</h5><ul>';
+                        $.each(spedizioniPerCitta, function(citta, numero) {
+                            contenuto += '<li>' + citta + ': ' + numero + '</li>';
+                        });
+                        contenuto += '</ul>';
+                        $('#risultati').html(contenuto);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+}

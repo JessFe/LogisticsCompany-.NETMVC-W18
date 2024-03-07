@@ -4,10 +4,12 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
+<div class="d-flex flex-column font-monospace">
+    <h2>Dettagli Spedizione</h2>
 
-<div>
-    <h4>Spedizione</h4>
+</div>
+
+<div class="font-monospace">
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -84,8 +86,22 @@
     </dl>
 </div>
 
-<div>
+@if (Request.IsAuthenticated)
+{
+    <a href="@Url.Action("Edit", new { id = Model.Item1.IDSpedizione })" class="btn btn-warning btn-custom btn-sm">
+        <i class="bi bi-pencil-square"></i> Modifica
+    </a>
+}
+<hr />
+
+<div class="font-monospace">
     <h4>Aggiornamenti Spedizione</h4>
+    @if (Request.IsAuthenticated)
+    {
+        <a href="@Url.Action("Create", "AggiornamentoSpedizione", new { idSpedizione = Model.Item1.IDSpedizione })" class="btn btn-warning btn-custom btn-sm">
+            <i class="bi bi-plus-square"></i> Aggiornamento
+        </a>
+    }
     <table class="table">
         <tr>
             <th>Stato</th>
@@ -106,7 +122,26 @@
     </table>
 </div>
 
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Item1.IDSpedizione }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<div>
+    @if (Request.IsAuthenticated)
+    {
+
+        <a href="@Url.Action("Index")" class="btn btn-warning btn-custom btn-sm">
+            <i class="bi bi-arrow-left-square"></i> Spedizioni
+        </a>
+    }
+    else
+    {
+        {
+            <a href="@Url.Action("VerificaSpedizione", "Home", new { area = "" })" class="btn btn-warning btn-custom btn-sm">
+                <i class="bi bi-arrow-left-square"></i> Ricerca
+            </a>
+        }
+        <a href="@Url.Action("Index", "Home", new { area = "" })" class="btn btn-warning btn-custom btn-sm">
+            <i class="bi bi-arrow-left-square"></i> Home
+        </a>
+    }
+</div>
+
+

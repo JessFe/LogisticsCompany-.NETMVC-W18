@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace Spedizioni.Controllers
 {
+    [Authorize]
     public class ClienteController : Controller
     {
         // stringa di connessione al database
@@ -55,6 +56,8 @@ namespace Spedizioni.Controllers
             return View(clienti);
         }
 
+        // --- CREATE ---
+
         //GET: Cliente/Create
         public ActionResult Create()
         {
@@ -65,6 +68,7 @@ namespace Spedizioni.Controllers
 
         // POST: Cliente/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(Cliente cliente)
         {
             // Controlla se i dati inseriti sono validi
@@ -135,22 +139,27 @@ namespace Spedizioni.Controllers
             return View(cliente);
         }
 
+        // --- EDIT ---
+
         // GET: Cliente/Edit/5
         public ActionResult Edit(int id)
         {
             Cliente cliente = null;
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                // Query per selezionare il cliente per ID
                 string sql = "SELECT * FROM Clienti WHERE IDCliente = @IDCliente";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@IDCliente", id);
 
+                // tenta di aprire la connessione e leggere i dati
                 try
                 {
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                     {
+                        // Se trova il cliente, crea un nuovo oggetto Cliente e assegna i valori
                         cliente = new Cliente
                         {
                             IDCliente = (int)reader["IDCliente"],
@@ -169,24 +178,27 @@ namespace Spedizioni.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    // Gestire l'errore (ad esempio, loggare l'errore e reindirizzare a una pagina di errore)
+
                 }
             }
 
             if (cliente == null)
             {
-                // Se non trova il cliente, reindirizza ad esempio alla lista dei clienti con un messaggio
+                // Se non trova il cliente, reindirizza 
                 return RedirectToAction("Index");
             }
 
+            // Se trova il cliente, passa il modello alla vista di modifica
             PopulateTipoClienteDropDownList(cliente.TipoCliente);
             return View(cliente);
         }
 
         // POST: Cliente/Edit/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(Cliente cliente)
         {
+            // Controlla se i dati inseriti sono validi
             if (ModelState.IsValid)
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -247,6 +259,8 @@ namespace Spedizioni.Controllers
             return View(cliente);
         }
 
+        // --- DETTAGLI ---
+
         // GET: Cliente/Dettagli/5
         public ActionResult Details(int id)
         {
@@ -298,6 +312,7 @@ namespace Spedizioni.Controllers
             return View(cliente);
         }
 
+        // --- METODI ---
 
 
         // Metodo per popolare la dropdownlist

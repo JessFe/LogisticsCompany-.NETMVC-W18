@@ -4,12 +4,21 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<div class="d-flex flex-column font-monospace">
+    <h2>Aggiornamenti Spedizioni</h2>
+            
+    <div class="align-self-end">
+        <a href="@Url.Action("Create")" class="btn btn-warning btn-custom btn-sm">
+            <i class="bi bi-plus-square"></i> Nuovo
+        </a>
+        <a href="@Url.Action("Index", "Spedizione")" class="btn btn-warning btn-custom btn-sm">
+    <i class="bi bi-arrow-left-square"></i> Spedizioni
+</a>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
+    </div>
+</div>
+
+<table class="table font-monospace">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.IDAggiornamento)
@@ -52,8 +61,10 @@
         <td>
             @Html.DisplayFor(modelItem => item.UltimoAggiornamento)
         </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.IDAggiornamento }) |
+        <td class="text-end">
+            <a href="@Url.Action("Edit", new { id = item.IDAggiornamento })" class="btn btn-warning btn-custom btn-sm">
+                <i class="bi bi-pencil-square"></i>
+            </a>
             
         </td>
     </tr>

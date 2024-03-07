@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace Spedizioni.Controllers
 {
+
     public class AggiornamentoSpedizioneController : Controller
     {
         // stringa di connessione al database
@@ -57,20 +58,34 @@ namespace Spedizioni.Controllers
             return View(aggiornamenti);
         }
 
+        // --- CREATE ---
+
         //GET: AggiornamentoSpedizione/Create
-        public ActionResult Create()
+        public ActionResult Create(int? idSpedizione = null) // Aggiungi un parametro opzionale
         {
             // Popola la dropdownlist con le spedizioni
-            PopulateSpedizioneDropDownList();
+            PopulateSpedizioneDropDownList(idSpedizione); // Modifica questa chiamata
 
             // Popola la dropdownlist con gli stati di spedizione
             PopulateStatiDropDownList();
 
+            // Se idSpedizione non è null, impostalo nel modello 
+            if (idSpedizione.HasValue)
+            {
+                var aggiornamento = new AggiornamentoSpedizione
+                {
+                    FK_IDSpedizione = idSpedizione.Value
+                };
+                return View(aggiornamento);
+            }
+
             return View();
         }
 
+
         //POST: AggiornamentoSpedizione/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(AggiornamentoSpedizione aggiornamento)
         {
             if (ModelState.IsValid)
@@ -79,7 +94,7 @@ namespace Spedizioni.Controllers
                 {
                     // Apre la connessione al database
                     conn.Open();
-                    // Query per inserire un nuovo aggiornamento
+                    // Query per inserire un nuovo aggiornamento spedizione
                     string sql = "INSERT INTO AggiornamentiSpedizioni (FK_IDSpedizione, StatoSped, LuogoPacco, DescrizEvento, UltimoAggiornamento) VALUES (@FK_IDSpedizione, @StatoSped, @LuogoPacco, @DescrizEvento, @UltimoAggiornamento)";
                     // Crea un nuovo comando per eseguire la query
                     SqlCommand cmd = new SqlCommand(sql, conn);
@@ -112,32 +127,37 @@ namespace Spedizioni.Controllers
                 }
             }
 
-            // Ripopola la DropDownList e altre ViewBag in caso di fallimento della validazione del modello o altri errori
-            PopulateSpedizioneDropDownList(aggiornamento.FK_IDSpedizione); // Riutilizza l'ID selezionato per mantenere la selezione dell'utente
+            // Ripopola la DropDownList in caso di fallimento validazione modello o altri errori
+            PopulateSpedizioneDropDownList(aggiornamento.FK_IDSpedizione);
 
-            // Ricrea ViewBag.StatoSped con gli stati di spedizione
             PopulateStatiDropDownList(aggiornamento.StatoSped);
 
             // Ritorna alla vista con il modello corrente per mostrare gli errori o permettere all'utente di correggere l'input
             return View(aggiornamento);
         }
 
+        // --- EDIT ---
+
         // GET: AggiornamentoSpedizione/Edit/5
         public ActionResult Edit(int id)
         {
+            // Inizializza un oggetto AggiornamentoSpedizione
             AggiornamentoSpedizione aggiornamento = null;
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                // Query per selezionare l'aggiornamento della spedizione con l'id specificato
                 string sql = "SELECT * FROM AggiornamentiSpedizioni WHERE IDAggiornamento = @IDAggiornamento";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@IDAggiornamento", id);
 
                 try
                 {
+                    // Apre la connessione al database
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                     {
+                        // Inizializza l'oggetto AggiornamentoSpedizione con i dati del database
                         aggiornamento = new AggiornamentoSpedizione
                         {
                             IDAggiornamento = (int)reader["IDAggiornamento"],
@@ -152,15 +172,17 @@ namespace Spedizioni.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Log l'errore (esempio: Console.WriteLine(ex.Message))
+                    Console.WriteLine(ex.Message);
                 }
             }
 
+            // Se l'aggiornamento non è stato trovato, ritorna HttpNotFound
             if (aggiornamento == null)
             {
                 return HttpNotFound();
             }
 
+            // Popola la dropdownlist con le spedizioni
             PopulateSpedizioneDropDownList(aggiornamento.FK_IDSpedizione);
             PopulateStatiDropDownList(aggiornamento.StatoSped);
 
@@ -169,15 +191,20 @@ namespace Spedizioni.Controllers
 
         // POST: AggiornamentoSpedizione/Edit/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(AggiornamentoSpedizione aggiornamento)
         {
+            // Se il modello è valido
             if (ModelState.IsValid)
             {
+                // Crea una nuova connessione al database
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
+                    // Query per aggiornare l'aggiornamento della spedizione
                     string sql = "UPDATE AggiornamentiSpedizioni SET FK_IDSpedizione = @FK_IDSpedizione, StatoSped = @StatoSped, LuogoPacco = @LuogoPacco, DescrizEvento = @DescrizEvento, UltimoAggiornamento = @UltimoAggiornamento WHERE IDAggiornamento = @IDAggiornamento";
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
+                    // Aggiunge i parametri alla query
                     cmd.Parameters.AddWithValue("@IDAggiornamento", aggiornamento.IDAggiornamento);
                     cmd.Parameters.AddWithValue("@FK_IDSpedizione", aggiornamento.FK_IDSpedizione);
                     cmd.Parameters.AddWithValue("@StatoSped", aggiornamento.StatoSped);
@@ -185,6 +212,7 @@ namespace Spedizioni.Controllers
                     cmd.Parameters.AddWithValue("@DescrizEvento", aggiornamento.DescrizEvento);
                     cmd.Parameters.AddWithValue("@UltimoAggiornamento", DateTime.Now);
 
+                    // Tenta di eseguire la query
                     try
                     {
                         conn.Open();
@@ -214,24 +242,30 @@ namespace Spedizioni.Controllers
         }
 
 
+        // --- METODI ---
 
-        // Metodo per popolare la dropdownlist con le spedizioni
+        // METODO per popolare la dropdownlist con le spedizioni
 
         private void PopulateSpedizioneDropDownList(object selectedSpedizione = null)
         {
+            // Inizializza la lista delle spedizioni
             var spedizioniConDettagli = new List<dynamic>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                // Query per selezionare tutte le spedizioni
+                // INNER JOIN per ottenere i dettagli del cliente
                 string sql = @"
 SELECT s.IDSpedizione, c.IDCliente, c.Nome, c.Cognome, c.NomeAzienda 
 FROM Spedizioni s
 INNER JOIN Clienti c ON s.FK_IDCliente = c.IDCliente";
                 SqlCommand cmd = new SqlCommand(sql, conn);
 
+                // Tenta di eseguire la query
                 try
                 {
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
+                    // Aggiunge alla lista delle spedizioni un nuovo oggetto con IDSpedizione e Descrizione
                     while (reader.Read())
                     {
                         var nomeCompleto = $"{reader["Nome"]} {reader["Cognome"]}".Trim();
@@ -249,22 +283,25 @@ INNER JOIN Clienti c ON s.FK_IDCliente = c.IDCliente";
                     Console.WriteLine(ex.Message);
                 }
             }
-
+            // Imposta la dropdownlist con le spedizioni
             ViewBag.FK_IDSpedizioneList = new SelectList(spedizioniConDettagli, "IDSpedizione", "Descrizione", selectedSpedizione);
         }
 
 
-        // Metodo per popolare la dropdownlist con gli stati di spedizione
+        // METODO per popolare la dropdownlist con gli stati di spedizione
         private void PopulateStatiDropDownList(string selectedStato = null)
         {
+            // Inizializza la lista degli stati di spedizione
             var statiSpedizione = new List<SelectListItem>
+
+            // Aggiunge alla lista degli stati di spedizione
     {
         new SelectListItem { Text = "In Transito", Value = "In Transito" },
         new SelectListItem { Text = "In Consegna", Value = "In Consegna" },
         new SelectListItem { Text = "Consegnato", Value = "Consegnato" },
         new SelectListItem { Text = "Non Consegnato", Value = "Non Consegnato" }
     };
-
+            // Imposta la dropdownlist con gli stati di spedizione
             ViewBag.StatoSped = new SelectList(statiSpedizione, "Value", "Text", selectedStato);
         }
 

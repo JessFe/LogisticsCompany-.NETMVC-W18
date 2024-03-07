@@ -1,0 +1,41 @@
+﻿@model Spedizioni.Models.VerificaSpedizione
+
+
+@{
+    ViewBag.Title = "Verifica Spedizione";
+}
+
+<h2>Verifica Spedizione</h2>
+
+@using (Html.BeginForm("VerificaSpedizione", "Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CodiceFiscalePartitaIVA)
+        @Html.TextBoxFor(model => model.CodiceFiscalePartitaIVA, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.CodiceFiscalePartitaIVA)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IDSpedizione)
+        @Html.TextBoxFor(model => model.IDSpedizione, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.IDSpedizione)
+    </div>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <button type="submit" class="btn btn-warning btn-custom btn-sm mt-2">Verifica</button>
+
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    <script>
+        //Rimozione bullet point dalla lista di errori
+        $(document).ready(function () {
+            $(".validation-summary-errors > ul").css("list-style-type", "none").css("padding-left", "0");
+        });
+    </script>
+}

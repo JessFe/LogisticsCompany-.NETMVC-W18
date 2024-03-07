@@ -18,3 +18,8 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.btn-custom {
+    background-color: #ffa03a;
+        
+}

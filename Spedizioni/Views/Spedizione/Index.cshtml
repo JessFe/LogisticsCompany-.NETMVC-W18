@@ -4,14 +4,24 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<div class="d-flex flex-column font-monospace">
+    <h2>Spedizioni</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-    @Html.Raw(" | ")
-    @Html.ActionLink("Aggiornamenti Spedizioni", "Index", "AggiornamentoSpedizione")
-</p>
-<table class="table">
+    <div class="align-self-end">
+        <a href="@Url.Action("Create")" class="btn btn-warning btn-custom btn-sm px-3 mb-3">
+            <i class="bi bi-plus-square"></i> Nuovo
+        </a>
+        <a href="@Url.Action("Index", "AggiornamentoSpedizione")" class="btn btn-warning btn-custom btn-sm px-3 mb-3">
+            <i class="bi bi-arrow-right-square"></i> Aggiornamenti
+        </a>
+
+    </div>
+    
+
+</div>
+
+
+<table class="table font-monospace">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.IDSpedizione)
@@ -72,10 +82,16 @@
         <td>
             @Html.DisplayFor(modelItem => item.DataConsegna)
         </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.IDSpedizione }) |
-            @Html.ActionLink("Details", "Details", new { id = item.IDSpedizione}) |
-            
+        
+        <td class="text-end">
+            <a href="@Url.Action("Edit", new { id = item.IDSpedizione })" class="btn btn-warning btn-custom btn-sm">
+                <i class="bi bi-pencil-square"></i>
+            </a>
+            <a href="@Url.Action("Details", new { id = item.IDSpedizione })" class="btn btn-warning btn-custom btn-sm">
+                <i class="bi bi-info-square"></i>
+            </a>
+
+
         </td>
     </tr>
 }

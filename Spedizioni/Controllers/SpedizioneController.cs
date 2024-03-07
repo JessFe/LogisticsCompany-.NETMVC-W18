@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace Spedizioni.Controllers
 {
+    [Authorize]
     public class SpedizioneController : Controller
     {
         // stringa di connessione al database
@@ -56,6 +57,8 @@ namespace Spedizioni.Controllers
             return View(spedizioni);
         }
 
+        // --- CREATE ---
+
         //GET: Spedizione/Create
         public ActionResult Create()
         {
@@ -66,6 +69,7 @@ namespace Spedizioni.Controllers
 
         //POST: Spedizione/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
 
         public ActionResult Create(Spedizione spedizione)
         {
@@ -114,12 +118,15 @@ namespace Spedizioni.Controllers
             return View(spedizione);
         }
 
+        // --- EDIT ---
+
         // GET: Spedizione/Edit/5
         public ActionResult Edit(int id)
         {
             Spedizione spedizione = null;
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                // Query per selezionare la spedizione con l'ID specificato
                 string sql = "SELECT * FROM Spedizioni WHERE IDSpedizione = @IDSpedizione";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@IDSpedizione", id);
@@ -130,6 +137,7 @@ namespace Spedizioni.Controllers
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                     {
+                        // Popola l'oggetto spedizione con i dati
                         spedizione = new Spedizione
                         {
                             IDSpedizione = (int)reader["IDSpedizione"],
@@ -164,16 +172,20 @@ namespace Spedizioni.Controllers
 
         // POST: Spedizione/Edit/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(Spedizione spedizione)
         {
             if (ModelState.IsValid)
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
+                    // Apre la connessione al database
                     conn.Open();
+                    // Query per l'aggiornamento della spedizione
                     string sql = "UPDATE Spedizioni SET FK_IDCliente = @FK_IDCliente, DataSpedizione = @DataSpedizione, Peso = @Peso, CittaDest = @CittaDest, IndirizzoDest = @IndirizzoDest, NominativoDest = @NominativoDest, CostoSpedizione = @CostoSpedizione, DataConsegna = @DataConsegna WHERE IDSpedizione = @IDSpedizione";
                     SqlCommand cmd = new SqlCommand(sql, conn);
 
+                    // Aggiunge i parametri della query
                     cmd.Parameters.AddWithValue("@IDSpedizione", spedizione.IDSpedizione);
                     cmd.Parameters.AddWithValue("@FK_IDCliente", spedizione.FK_IDCliente);
                     cmd.Parameters.AddWithValue("@DataSpedizione", spedizione.DataSpedizione);
@@ -210,16 +222,18 @@ namespace Spedizioni.Controllers
 
 
 
+        // --- DETTAGLI ---
 
-        //detagli spedizione
+        [AllowAnonymous]
         public ActionResult Details(int id)
         {
+            // Inizializza la spedizione e la lista di aggiornamenti
             Spedizione spedizione = new Spedizione();
             List<AggiornamentoSpedizione> aggiornamenti = new List<AggiornamentoSpedizione>();
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                // Recupera la spedizione
+                // Recupera la spedizione con l'ID specificato
                 string sqlSpedizione = "SELECT * FROM Spedizioni WHERE IDSpedizione = @IDSpedizione";
                 SqlCommand cmdSpedizione = new SqlCommand(sqlSpedizione, conn);
                 cmdSpedizione.Parameters.AddWithValue("@IDSpedizione", id);
@@ -228,8 +242,9 @@ namespace Spedizioni.Controllers
                 {
                     conn.Open();
                     SqlDataReader reader = cmdSpedizione.ExecuteReader();
-                    if (reader.Read()) // Utilizzo if perché mi aspetto al massimo un risultato
+                    if (reader.Read())
                     {
+                        // Popola l'oggetto spedizione con i dati
                         spedizione.IDSpedizione = (int)reader["IDSpedizione"];
                         spedizione.FK_IDCliente = (int)reader["FK_IDCliente"];
                         spedizione.DataSpedizione = (DateTime)reader["DataSpedizione"];
@@ -240,7 +255,7 @@ namespace Spedizioni.Controllers
                         spedizione.CostoSpedizione = reader["CostoSpedizione"] as decimal?;
                         spedizione.DataConsegna = reader["DataConsegna"] as DateTime?;
                     }
-                    reader.Close(); // Importante chiudere il reader prima di eseguire una nuova query
+                    reader.Close();
                 }
                 catch (Exception ex)
                 {
@@ -279,8 +294,14 @@ namespace Spedizioni.Controllers
             return View(model);
         }
 
+        public ActionResult Dashboard()
+        {
+            return View();
+        }
 
-        // Metodo per popolare la dropdownlist con i clienti
+        // --- METODI ---
+
+        // METODO per popolare la dropdownlist con i clienti
         private void PopulateClienteDropDownList(object selectedCliente = null)
         {
             // Inizializza una lista di clienti
@@ -327,5 +348,108 @@ namespace Spedizioni.Controllers
 
             ViewBag.FK_IDCliente = new SelectList(clienteSelectList, "IDCliente", "Descrizione", selectedCliente);
         }
+
+
+
+        // --- AJAX ---
+
+        [HttpGet]
+        public ActionResult SpedizioniInConsegnaOggi()
+        {
+            // Data odierna
+            var dataOdierna = DateTime.Now.Date;
+            // Inizializza una lista di spedizioni
+            List<Spedizione> spedizioniInConsegna;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                // Query per selezionare le spedizioni in consegna con aggiornamento odierno
+                string sql = @"
+            SELECT s.*
+FROM Spedizioni s
+JOIN AggiornamentiSpedizioni a ON s.IDSpedizione = a.FK_IDSpedizione
+WHERE a.StatoSped = 'In Consegna' AND CONVERT(date, a.UltimoAggiornamento) = @DataOdierna";
+
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@DataOdierna", dataOdierna);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                spedizioniInConsegna = new List<Spedizione>();
+                while (reader.Read())
+                {
+                    // Aggiunge una nuova spedizione alla lista
+                    spedizioniInConsegna.Add(new Spedizione
+                    {
+                        IDSpedizione = (int)reader["IDSpedizione"],
+                        NominativoDest = reader["NominativoDest"].ToString(),
+
+
+                    });
+                }
+            }
+
+            return Json(spedizioniInConsegna, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [HttpGet]
+        public ActionResult NumeroSpedizioniInAttesa()
+        {
+            // Inizializza il numero di spedizioni in attesa
+            int numeroSpedizioni;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                // Query per selezionare il numero di spedizioni in attesa di consegna (non consegnate)
+                string sql = @"
+            SELECT COUNT(DISTINCT s.IDSpedizione)
+FROM Spedizioni s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM AggiornamentiSpedizioni a
+    WHERE a.FK_IDSpedizione = s.IDSpedizione AND a.StatoSped = 'Consegnato'
+)";
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                conn.Open();
+                numeroSpedizioni = (int)cmd.ExecuteScalar();
+            }
+
+            return Json(new { NumeroSpedizioniInAttesa = numeroSpedizioni }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        [HttpGet]
+        public ActionResult SpedizioniPerCittaDest()
+        {
+            // Inizializza un dizionario con le spedizioni per città di destinazione
+            var spedizioniPerCitta = new Dictionary<string, int>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                // Query per contare il numero di spedizioni per città di destinazione
+                string sql = @"
+            SELECT CittaDest, COUNT(*) AS NumeroSpedizioni
+            FROM Spedizioni
+            GROUP BY CittaDest";
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    // Aggiunge al dizionario
+                    spedizioniPerCitta.Add((string)reader["CittaDest"], (int)reader["NumeroSpedizioni"]);
+                }
+            }
+
+            return Json(spedizioniPerCitta, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }
