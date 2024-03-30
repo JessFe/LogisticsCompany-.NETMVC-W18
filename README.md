@@ -10,3 +10,7 @@ It features a dual-interface system: a customer-facing side for shipment trackin
 ![CSS](https://img.shields.io/badge/CSS-282C34?logo=css3&logoColor=1572B6)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-282C34?logo=bootstrap&logoColor=7952B3)
 ![VisualStudio](https://img.shields.io/badge/Visual_Studio-282C34?logo=visualstudio&logoColor=5C2D91)
+
+## Preview
+
+<img src="/preview/01.png" width="370">
